@@ -1,5 +1,6 @@
 numpy>=1.17.4
 pandas>=0.25.3
+PYMIC==0.2.4
 python>=3.6.9
 pytorch>=1.7.1
 SimpleITK>=1.2.4

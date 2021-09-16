@@ -25,7 +25,7 @@ In the fine stage, we use nn-UNet to segment all the five foreground classes: LV
 This code depends on [Pytorch](https://pytorch.org), [PyMIC][PyMIC_link] and [nnUNet][nnUNet_link].
 To install PyMIC, run:
 ```
-pip install PYMIC=0.2.4
+pip install PYMIC==0.2.4
 ``` 
 To use nnUNet, Download [nnUNet][nnUNet_link], and put them in the `ProjectDir` such as `/mnt/data1/swzhai/projects/MyoPS2020`.
 Other requirements can be found in [`requirements.txt`][`./requirements.txt`].
@@ -137,5 +137,5 @@ nnUNet_ensemble -f OUTPUT_FOLDER_MODEL1 OUTPUT_FOLDER_MODEL2 -o OUTPUT_FOLDER -p
 
 * Because we crop the images twice in the whole process for test images, we need to insert the fine segmentation results into the original images space. Run the following command, and the final segmentation results are saved in `result/nnunet/test_ensemble_original`.
 ```bash
-python get_final_test.py
+python get_final_test.py result/nnunet/test_ensemble  result/nnunet/test_ensemble_original
 ```
