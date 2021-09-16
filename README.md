@@ -28,7 +28,7 @@ To install PyMIC, run:
 pip install PYMIC==0.2.4
 ``` 
 To use nnUNet, Download [nnUNet][nnUNet_link], and put them in the `ProjectDir` such as `/mnt/data1/swzhai/projects/MyoPS2020`.
-Other requirements can be found in [`requirements.txt`][`./requirements.txt`].
+Other requirements can be found in [`requirements.txt`](`./requirements.txt`).
 
 ## Configure data directories and environmental variables
 * Configure data directories in `path_confg.py` based on your environment. For example, in my case:
@@ -78,6 +78,7 @@ pymic_evaluate_seg config/evaluation.cfg
 python  postprocess.py result/unet2d result/unet2d_post
 ```
 * The post processed results will be saved in `result/unet2d_post`. You can set `segmentation_folder_root  = result/unet2d_post` in `config/evaluation.cfg` and run the evaluation code again. The average dice scores before after post processing on my machine are:
+
 |---|class_1|class_2|class_3|average|
 |---|---|---|---|---|
 |No postprocess|0.8709|0.9050|0.9076|0.8945|
