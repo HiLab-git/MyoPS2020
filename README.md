@@ -17,9 +17,9 @@ This repository provides source code for myocardial pathology segmentation (MyoP
 ## Method overview
 Our solution is a coarse-to-fine method. [PyMIC][PyMIC_link] and [nnUNet][nnUNet_link] are used in the coarse and fine stages, respectively. 
 
-In the coarse segmentation stage, we use 2D U-Net to segment four classes: background, complete ring-shaped myocardium, left ventricular (LV) blood pool and rigth ventricular (RV) blood pool. The network is trained with a combination of Dice loss and  cross entropy loss.
+In the coarse segmentation stage, we use 2D U-Net to segment there foreground classes: complete ring-shaped myocardium, left ventricular (LV) blood pool and rigth ventricular (RV) blood pool. The network is trained with a combination of Dice loss and cross entropy loss.
 
-In the fine stage, we use nn-UNet to segment all the five classes: LV blood pool, RV blood pool, LV normal myocardium, LV myocardial edema and LV myocardial scar. The coarse segmentation result will serve as an extra channel for the input of the network, i.e., the first 3 modalities are C0(_0000), DE(_0001) and T2(_0002), respectively. The 4th modality(_0003) is the coarse segmentation result. 
+In the fine stage, we use nn-UNet to segment all the five foreground classes: LV blood pool, RV blood pool, LV normal myocardium, LV myocardial edema and LV myocardial scar. The coarse segmentation result will serve as an extra channel for the input of the network, i.e., the first 3 modalities are C0(_0000), DE(_0001) and T2(_0002), respectively. The 4th modality(_0003) is the coarse segmentation result. 
 
 ## Requirements
 This code depends on [Pytorch](https://pytorch.org), [PyMIC][PyMIC_link] and [nnUNet][nnUNet_link].
@@ -28,7 +28,7 @@ To install PyMIC, run:
 pip install PYMIC=0.2.4
 ``` 
 To use nnUNet, Download [nnUNet][nnUNet_link], and put them in the `ProjectDir` such as `/mnt/data1/swzhai/projects/MyoPS2020`.
-Other requirements can be found in `requirements.txt`.
+Other requirements can be found in [`requirements.txt`][`./requirements.txt`].
 
 ## Configure data directories and environmental variables
 * Configure data directories in `path_confg.py` based on your environment:
