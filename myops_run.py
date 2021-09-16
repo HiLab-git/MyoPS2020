@@ -23,7 +23,6 @@ def main():
     data_dir = config['dataset']['root_dir']
     data_dir = data_dir.replace('MyoPS_data_dir', path_dict['MyoPS_data_dir'])
     config['dataset']['root_dir'] = data_dir
-    if(stage)
     for item in ['train_csv', 'valid_csv', 'test_csv']:
         config['dataset'][item] = config['dataset'][item].replace("foldi", "fold" + fold) 
     ckpt_save_dir = config['training']['ckpt_save_dir']

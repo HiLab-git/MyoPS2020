@@ -97,8 +97,7 @@ Tips: In order to save unnecessary time, you can change `self.max_num_epochs = 1
 
 * Run the following commands to prepare training and testing data for nn-UNet:
 ```
-python crop_for_fine_stage.py train
-python crop_for_fine_stage.py test
+python crop_for_fine_stage.py
 python create_dataset_json.py
 ```
 

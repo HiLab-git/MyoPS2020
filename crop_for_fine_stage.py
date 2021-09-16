@@ -91,43 +91,37 @@ def crop_acc_mask(images_dir, images_output_dir, masks_dir, mask_suffix=None, ma
         save_json(json_dict, os.path.join(masks_output_dir, "crop_information.json"))
 
 if __name__ == "__main__":
-    if(len(sys.argv) < 2):
-        print('Number of arguments should be 2. e.g.')
-        print('    python crop_for_fine_stage.py train')
-        exit()
-    stage = str(sys.argv[1])
     # root_dir = "/home/guotai/disk2t/data/heart/MyoPS/data_preprocessed"
     # nnUNet_data_dir = "/home/guotai/disk2t/projects/nnUNet/exp_dir/nnUNet_raw/nnUNet_raw_data/Task112_MyoPS"
     root_dir = path_dict['MyoPS_data_dir'] + "/data_preprocessed"
     nnUNet_data_dir = path_dict['nnunet_raw_data_dir'] + "/Task112_MyoPS"
     # Task112_MyoPS: use labelsTr(GTs) to crop and use predsTr(predictions) as coarse segmentation
+    
+    # for training images
     predsTr_dir = "result/unet2d_post"
+    imagesTr_dir = os.path.join(root_dir, "imagesTr")
+    labelsTr_dir = os.path.join(root_dir, "labelsTr")
+    labelsTr_suffix = "gd"
+    imagesTr_output_dir = os.path.join(nnUNet_data_dir, "imagesTr")
+    labelsTr_output_dir = os.path.join(nnUNet_data_dir, "labelsTr")
+    crop_acc_mask(imagesTr_dir, imagesTr_output_dir, labelsTr_dir, labelsTr_suffix, labelsTr_output_dir)
+    # In imagesTr_output_dir there are "XXXX_0003.nii.gz" derived from labelsTr(GTs) which should be replaced
+    # with predsTr(predictions) in predsTr_dir
+    json_dict = load_json(os.path.join(imagesTr_output_dir, "crop_information.json"))
+    for label_path in json_dict.keys():
+        crop_bbox_min = json_dict[label_path]["crop_bbox_min"]
+        crop_bbox_max = json_dict[label_path]["crop_bbox_max"]
+        label = label_path.split("/")[-1]
+        pred = label.replace("_{0:}".format(labelsTr_suffix), "")
+        image = label.replace("_{0:}".format(labelsTr_suffix), "_0003")
+        pred_path = find(pred, predsTr_dir)
+        print(pred, pred_path)
+        pred_sitk = sitk.ReadImage(pred_path)
+        pred_npy = sitk.GetArrayFromImage(pred_sitk)
+        pred_output_npy = crop_ND_volume_with_bounding_box(pred_npy, crop_bbox_min, crop_bbox_max)
+        save_array_as_nifty_volume(pred_output_npy, os.path.join(imagesTr_output_dir, image), pred_path)
+    # for testing images
     predsTs_dir = "result/unet2d_test_post"
-    if stage == "train":
-        imagesTr_dir = os.path.join(root_dir, "imagesTr")
-        labelsTr_dir = os.path.join(root_dir, "labelsTr")
-        labelsTr_suffix = "gd"
-        imagesTr_output_dir = os.path.join(nnUNet_data_dir, "imagesTr")
-        labelsTr_output_dir = os.path.join(nnUNet_data_dir, "labelsTr")
-        crop_acc_mask(imagesTr_dir, imagesTr_output_dir, labelsTr_dir, labelsTr_suffix, labelsTr_output_dir)
-        # In imagesTr_output_dir there are "XXXX_0003.nii.gz" derived from labelsTr(GTs) which should be replaced
-        # with predsTr(predictions) in predsTr_dir
-        json_dict = load_json(os.path.join(imagesTr_output_dir, "crop_information.json"))
-        for label_path in json_dict.keys():
-            crop_bbox_min = json_dict[label_path]["crop_bbox_min"]
-            crop_bbox_max = json_dict[label_path]["crop_bbox_max"]
-            label = label_path.split("/")[-1]
-            pred = label.replace("_{0:}".format(labelsTr_suffix), "")
-            image = label.replace("_{0:}".format(labelsTr_suffix), "_0003")
-            pred_path = find(pred, predsTr_dir)
-            print(pred, pred_path)
-            pred_sitk = sitk.ReadImage(pred_path)
-            pred_npy = sitk.GetArrayFromImage(pred_sitk)
-            pred_output_npy = crop_ND_volume_with_bounding_box(pred_npy, crop_bbox_min, crop_bbox_max)
-            save_array_as_nifty_volume(pred_output_npy, os.path.join(imagesTr_output_dir, image), pred_path)
-    elif stage == "test":
-        imagesTs_dir = os.path.join(root_dir, "imagesTs")
-        imagesTs_output_dir = os.path.join(nnUNet_data_dir, "imagesTs")
-        crop_acc_mask(imagesTs_dir, imagesTs_output_dir, predsTs_dir, mask_suffix=None, masks_output_dir=None)
-    else:
-        raise ValueError("stage can only be train or test")
+    imagesTs_dir = os.path.join(root_dir, "imagesTs")
+    imagesTs_output_dir = os.path.join(nnUNet_data_dir, "imagesTs")
+    crop_acc_mask(imagesTs_dir, imagesTs_output_dir, predsTs_dir, mask_suffix=None, masks_output_dir=None)
