@@ -31,24 +31,19 @@ To use nnUNet, Download [nnUNet][nnUNet_link], and put them in the `ProjectDir` 
 Other requirements can be found in [`requirements.txt`][`./requirements.txt`].
 
 ## Configure data directories and environmental variables
-* Configure data directories in `path_confg.py` based on your environment:
+* Configure data directories in `path_confg.py` based on your environment. For example, in my case:
 ``` bash
 path_dict['MyoPS_data_dir'] = "/mnt/data1/swzhai/dataset/MyoPS/"
 path_dict['nnunet_raw_data_dir'] = "/mnt/data1/swzhai/dataset/MyoPS/nnUNet_raw_data_base/nnUNet_raw_data"
 ```
 where `MyoPS_data_dir` is the path of the MyoPS dataset, and `nnunet_raw_data_dir` is the path of raw data used by nnU-Net in the second stage of our method.
-* Install [nnUNet][nnUNet_link] and set environment variables.
+* After installation of [nnUNet][nnUNet_link], set environmental variables as follows.
 ```bash
 cd nnUNet
 pip install -e .
-export nnUNet_raw_data_base="DataDir/nnUNet_raw_data_base"
-export nnUNet_preprocessed="DataDir/nnUNet_preprocessed"
+export nnUNet_raw_data_base="MyoPS_data_dir/nnUNet_raw_data_base"
+export nnUNet_preprocessed="MyoPS_data_dir/nnUNet_preprocessed"
 export RESULTS_FOLDER="ProjectDir/result/nnunet"
-
-# in my case
-export nnUNet_raw_data_base="/mnt/data1/swzhai/dataset/MyoPS/nnUNet_raw_data_base"
-export nnUNet_preprocessed="/mnt/data1/swzhai/dataset/MyoPS/nnUNet_preprocessed"
-export RESULTS_FOLDER="/mnt/data1/swzhai/projects/MyoPS/myops/result/nnunet"
 ```
 
 ## Dataset and Preprocessing
@@ -85,15 +80,15 @@ python  postprocess.py result/unet2d result/unet2d_post
 * The post processed results will be saved in `result/unet2d_post`. You can set `segmentation_folder_root  = result/unet2d_post` in `config/evaluation.cfg` and run the evaluation code again. The average dice scores before after post processing on my machine are:
 |---|class_1|class_2|class_3|average|
 |---|---|---|---|---|
-|w/o pp|0.8709|0.9050|0.9076|0.8945|
-|w/ pp|0.8770|0.9117|0.9128|0.9005|
+|No postprocess|0.8709|0.9050|0.9076|0.8945|
+|with postprocess|0.8770|0.9117|0.9128|0.9005|
 
 ### Inference for testing data
 * We use an ensemble of five models obtained during the five-fold cross validation for inference. Open `config/test.cfg` and set `ckpt_name` to the list of the best performing checkpoints of the five folds. The best performing iteration number for fold i can be found in `model/unet2d/fold_i/model_best.txt`. Run the following command for inference. The results will be saved in `result/unet2d_test`.
 ```bash
 python myops_test.py test config/test.cfg
 ```
-* Run this command to post process the segmentation of the testing images:
+* Run this command to postprocess the segmentation of the testing images:
 ```bash
 python postprocess.py result/unet2d_test result/unet2d_test_post
 ```
@@ -110,7 +105,7 @@ python crop_for_fine_stage.py
 python create_dataset_json.py
 ```
 
-### training
+### Training
 * Dataset conversion and preprocess. Run:
 ```bash
 nnUNet_plan_and_preprocess -t 112 --verify_dataset_integrity
@@ -123,12 +118,12 @@ nnUNet_train 2d nnUNetTrainerV2 Task112_MyoPS FOLD --npz
 ```bash
 nnUNet_train 3d_fullres nnUNetTrainerV2 Task112_MyoPS FOLD --npz
 ```
-### inference
+### Inference
 * Here we have 2 fine models, i.e. 2D UNet and 2.5D UNet. To find the best configuration for inference, run:
 ```bash
 nnUNet_find_best_configuration -m 2d 3d_fullres -t 112
 ```
-* The terminal will output some commands that are used to infer test dataset and get their ensemble. In my case, I get the following commands: 
+* The terminal will output some commands for inference with each model and getting their ensemble. In my case, I get the following commands: 
 ```bash
 nnUNet_predict -i FOLDER_WITH_TEST_CASES -o OUTPUT_FOLDER_MODEL1 -tr nnUNetTrainerV2 -ctr nnUNetTrainerV2CascadeFullRes -m 2d -p nnUNetPlansv2.1 -t Task112_MyoPS
 
