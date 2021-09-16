@@ -13,6 +13,7 @@ This repository provides source code for myocardial pathology segmentation (MyoP
 }
 ```
 <img src='./picture/method.png'  width="400">
+
 ## Method overview
 Our solution is a coarse-to-fine method. [PyMIC][PyMIC_link] and [nnUNet][nnUNet_link] are used in the coarse and fine stages, respectively. 
 
