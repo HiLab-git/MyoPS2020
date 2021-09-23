@@ -22,10 +22,11 @@ In the coarse segmentation stage, we use 2D U-Net to segment there foreground cl
 In the fine stage, we use nn-UNet to segment all the five foreground classes: LV blood pool, RV blood pool, LV normal myocardium, LV myocardial edema and LV myocardial scar. The coarse segmentation result will serve as an extra channel for the input of the network, i.e., the first 3 modalities are C0(_0000), DE(_0001) and T2(_0002), respectively. The 4th modality(_0003) is the coarse segmentation result. 
 
 ## Requirements
-This code depends on [Pytorch](https://pytorch.org), [PyMIC][PyMIC_link] and [nnUNet][nnUNet_link].
-To install PyMIC, run:
+This code depends on [Pytorch](https://pytorch.org), [PyMIC][PyMIC_link], [GeodisTK](https://github.com/taigw/GeodisTK) and [nnUNet][nnUNet_link].
+To install PyMIC and GeodisTK, run:
 ```
 pip install PYMIC==0.2.4
+pip install GeodisTK
 ``` 
 To use nnUNet, Download [nnUNet][nnUNet_link], and put them in the `ProjectDir` such as `/mnt/data1/swzhai/projects/MyoPS2020`.
 Other requirements can be found in [`requirements.txt`](`./requirements.txt`).
@@ -33,7 +34,7 @@ Other requirements can be found in [`requirements.txt`](`./requirements.txt`).
 ## Configure data directories and environmental variables
 * Configure data directories in `path_confg.py` based on your environment. For example, in my case:
 ``` bash
-path_dict['MyoPS_data_dir'] = "/mnt/data1/swzhai/dataset/MyoPS/"
+path_dict['MyoPS_data_dir'] = "/mnt/data1/swzhai/dataset/MyoPS"
 path_dict['nnunet_raw_data_dir'] = "/mnt/data1/swzhai/dataset/MyoPS/nnUNet_raw_data_base/nnUNet_raw_data"
 ```
 where `MyoPS_data_dir` is the path of the MyoPS dataset, and `nnunet_raw_data_dir` is the path of raw data used by nnU-Net in the second stage of our method.
@@ -47,7 +48,7 @@ export RESULTS_FOLDER="ProjectDir/result/nnunet"
 ```
 
 ## Dataset and Preprocessing
-* Download the dataset from [MyoPS 2020](http://www.sdspeople.fudan.edu.cn/zhuangxiahai/0/myops20) and put the dataset in the `MyoPS_data_dir`. specifically, `MyoPS_data_dir/data_raw/imagesTr` for training images, `MyoPS_data_dir/data_raw/labelsTr` for training ground truth and `MyoPS_data_dir/data_raw/imagesTs` for test images.
+* Download the dataset from [MyoPS 2020](http://www.sdspeople.fudan.edu.cn/zhuangxiahai/0/myops20) and put the dataset in the `MyoPS_data_dir`, specifically, `MyoPS_data_dir/data_raw/imagesTr` for training images, `MyoPS_data_dir/data_raw/labelsTr` for training ground truth and `MyoPS_data_dir/data_raw/imagesTs` for test images.
 
 * For data preprocessing, Run:
 ```bash
@@ -81,8 +82,8 @@ python  postprocess.py result/unet2d result/unet2d_post
 
 |---|class_1|class_2|class_3|average|
 |---|---|---|---|---|
-|No postprocess|0.8709|0.9050|0.9076|0.8945|
-|with postprocess|0.8770|0.9117|0.9128|0.9005|
+|No postprocess|0.8780|0.9067|0.9180|0.9009|
+|with postprocess|0.8785|0.9095|0.9234|0.9038|
 
 ### Inference for testing data
 * We use an ensemble of five models obtained during the five-fold cross validation for inference. Open `config/test.cfg` and set `ckpt_name` to the list of the best performing checkpoints of the five folds. The best performing iteration number for fold i can be found in `model/unet2d/fold_i/model_best.txt`. Run the following command for inference. The results will be saved in `result/unet2d_test`.
