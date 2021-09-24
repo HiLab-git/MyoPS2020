@@ -19,7 +19,7 @@ Our solution is a coarse-to-fine method. [PyMIC][PyMIC_link] and [nnUNet][nnUNet
 
 In the coarse segmentation stage, we use 2D U-Net to segment there foreground classes: complete ring-shaped myocardium, left ventricular (LV) blood pool and rigth ventricular (RV) blood pool. The network is trained with a combination of Dice loss and cross entropy loss.
 
-In the fine stage, we use nn-UNet to segment all the five foreground classes: LV blood pool, RV blood pool, LV normal myocardium, LV myocardial edema and LV myocardial scar. The coarse segmentation result will serve as an extra channel for the input of the network, i.e., the first 3 modalities are C0(_0000), DE(_0001) and T2(_0002), respectively. The 4th modality(_0003) is the coarse segmentation result. 
+In the fine stage, we use nnUNet to segment all the five foreground classes: LV blood pool, RV blood pool, LV normal myocardium, LV myocardial edema and LV myocardial scar. The coarse segmentation result will serve as an extra channel for the input of the network, i.e., the first 3 modalities are C0(_0000), DE(_0001) and T2(_0002), respectively. The 4th modality(_0003) is the coarse segmentation result. 
 
 ## Requirements
 This code depends on [Pytorch](https://pytorch.org), [PyMIC][PyMIC_link], [GeodisTK](https://github.com/taigw/GeodisTK) and [nnUNet][nnUNet_link].
@@ -96,12 +96,12 @@ python postprocess.py result/unet2d_test result/unet2d_test_post
 ```
 
 ## Fine segmentation
-In the fine segmentation stage, we use nn-UNet to segment all the classes. This section is highly dependent on [nnUNet][nnUNet_link], so make sure that you have some basic experience of using [nnUNet][nnUNet_link] before you do the following operations.
+In the fine segmentation stage, we use nnUNet to segment all the classes. This section is highly dependent on [nnUNet][nnUNet_link], so make sure that you have some basic experience of using [nnUNet][nnUNet_link] before you do the following operations.
 
 Tips: In order to save unnecessary time, you can change `self.max_num_epochs = 1000` to `self.max_num_epochs = 300` in `nnUNet/nnunet/training/network_training/nnUNetTrainerV2.py`.
 
 ### Data preparation
-* Run the following commands to prepare training and testing data for nn-UNet. Note that the input of nnUNet has four channels as mentioned above.
+* Run the following commands to prepare training and testing data for nnUNet. Note that the input of nnUNet has four channels as mentioned above.
 ```
 python crop_for_fine_stage.py
 python create_dataset_json.py
