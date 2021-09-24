@@ -7,6 +7,6 @@ SimpleITK>=1.2.4
 tensorboard>=2.1.0
 tensorboardX>=1.9
 torchvision>=0.10.0
-
+GeodisTK
 
 
